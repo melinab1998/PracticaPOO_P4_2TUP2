@@ -7,7 +7,9 @@ namespace Web.Controllers
     [Route("[controller]")]
     public class BankAccountController : ControllerBase
     {
-        [HttpPost]
+        public static List<BankAccount> Accounts = new List<BankAccount>();
+
+        [HttpPost("create")]
         public ActionResult<BankAccount> CreateAccount([FromQuery] string owner, [FromQuery] decimal initialBalance)
         {
             if (string.IsNullOrWhiteSpace(owner))
@@ -17,8 +19,10 @@ namespace Web.Controllers
                 return BadRequest("El saldo inicial debe ser mayor a 0.");
 
             var account = new BankAccount(owner, initialBalance);
+            Accounts.Add(account); 
 
             return Ok(account);
         }
     }
 }
+

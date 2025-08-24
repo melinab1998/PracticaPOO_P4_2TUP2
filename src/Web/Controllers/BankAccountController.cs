@@ -1,79 +1,112 @@
 using Core.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Web.DTOs.Accounts;
+using Web.DTOs.Transactions;
 
 namespace Web.Controllers
 {
     [ApiController]
-    [Route("bankaccount")]
+    [Route("api/accounts")]
     public class BankAccountController : ControllerBase
     {
         public static List<BankAccount> Accounts = new List<BankAccount>();
 
-        [HttpPost("create")]
-        public ActionResult<BankAccount> CreateAccount([FromQuery] string owner, [FromQuery] decimal initialBalance)
+        [HttpPost]
+        public ActionResult<BankAccountResponse> CreateAccount([FromBody] CreateAccountRequest request)
         {
-            if (string.IsNullOrWhiteSpace(owner))
-                return BadRequest("El propietario es obligatorio.");
+            if (string.IsNullOrWhiteSpace(request.Owner))
+                return BadRequest(new { message = "El propietario es obligatorio." });
 
-            if (initialBalance <= 0)
-                return BadRequest("El saldo inicial debe ser mayor a 0.");
+            if (request.InitialBalance <= 0)
+                return BadRequest(new { message = "El saldo inicial debe ser mayor a 0." });
 
-            var account = new BankAccount(owner, initialBalance);
+            var account = new BankAccount(request.Owner, request.InitialBalance);
             Accounts.Add(account);
 
-            return Ok(account);
+            var response = new BankAccountResponse
+            {
+                Number = account.Number,
+                Owner = account.Owner,
+                Balance = account.Balance
+            };
+
+            return CreatedAtAction(nameof(GetBalance), new { accountNumber = account.Number }, response);
         }
 
         [HttpPost("{accountNumber}/deposit")]
-        public ActionResult<string> Deposit([FromRoute] string accountNumber, [FromQuery] decimal amount, [FromQuery] string note = "Depósito")
+        public ActionResult<TransactionResponse> Deposit(string accountNumber, [FromBody] TransactionRequest request)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
-            if (account == null) return NotFound($"Cuenta {accountNumber} no encontrada.");
+            if (account == null)
+                return NotFound(new { message = $"Cuenta {accountNumber} no encontrada." });
 
             try
             {
-                account.MakeDeposit(amount, DateTime.Now, note);
-                return Ok($"Depósito de {amount} realizado en {account.Number}. Saldo actual: {account.Balance}");
+                account.MakeDeposit(request.Amount, DateTime.Now, request.Note);
+                var response = new TransactionResponse
+                {
+                    Amount = request.Amount,
+                    Note = request.Note,
+                    Date = DateTime.Now
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         [HttpPost("{accountNumber}/withdraw")]
-        public ActionResult<string> Withdraw([FromRoute] string accountNumber, [FromQuery] decimal amount, [FromQuery] string note = "Retiro")
+        public ActionResult<TransactionResponse> Withdraw(string accountNumber, [FromBody] TransactionRequest request)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
-            if (account == null) return NotFound($"Cuenta {accountNumber} no encontrada.");
+            if (account == null)
+                return NotFound(new { message = $"Cuenta {accountNumber} no encontrada." });
 
             try
             {
-                account.MakeWithdrawal(amount, DateTime.Now, note);
-                return Ok($"Retiro de {amount} realizado en {account.Number}. Saldo actual: {account.Balance}");
+                account.MakeWithdrawal(request.Amount, DateTime.Now, request.Note);
+                var response = new TransactionResponse
+                {
+                    Amount = request.Amount, 
+                    Note = request.Note,
+                    Date = DateTime.Now
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
+
         [HttpGet("{accountNumber}/balance")]
-        public ActionResult<string> GetBalance([FromRoute] string accountNumber)
+        public ActionResult<BalanceResponse> GetBalance(string accountNumber)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
-            if (account == null) return NotFound($"Cuenta {accountNumber} no encontrada.");
+            if (account == null)
+                return NotFound(new { message = $"Cuenta {accountNumber} no encontrada." });
 
-            return Ok($"Saldo actual de {account.Owner} (Cuenta {account.Number}): {account.Balance}");
+            var response = new BalanceResponse
+            {
+                Owner = account.Owner,
+                Balance = account.Balance
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("{accountNumber}/history")]
-        public ActionResult<string> GetHistory([FromRoute] string accountNumber)
+        public ActionResult<string> GetHistory(string accountNumber)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
-            if (account == null) return NotFound($"Cuenta {accountNumber} no encontrada.");
+            if (account == null)
+                return NotFound($"Cuenta {accountNumber} no encontrada.");
 
             return Ok(account.GetAccountHistory());
         }
+
     }
 }

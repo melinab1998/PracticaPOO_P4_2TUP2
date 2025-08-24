@@ -4,6 +4,7 @@ namespace Core.Entities
     {
         private static int s_accountNumberSeed = 1234567890;
         private List<Transaction> _allTransactions = new List<Transaction>();
+        public int Id { get; }
         public string Number { get; }
         public string Owner { get; set; }
         public decimal Balance
@@ -22,6 +23,7 @@ namespace Core.Entities
 
         public BankAccount(string name, decimal initialBalance)
         {
+            Id = s_accountNumberSeed;           
             Number = s_accountNumberSeed.ToString();
             s_accountNumberSeed++;
 

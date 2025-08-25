@@ -1,4 +1,4 @@
-namespace Web.DTOs.Transactions
+namespace Web.DTOs.Accounts
 {
     public class BalanceResponse
     {

@@ -34,7 +34,7 @@ namespace Web.Controllers
         }
 
         [HttpPost("{accountNumber}/deposit")]
-        public ActionResult<TransactionResponse> Deposit(string accountNumber, [FromBody] TransactionRequest request)
+        public ActionResult<TransactionResponse> Deposit([FromRoute] string accountNumber, [FromBody] TransactionRequest request)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)
@@ -58,7 +58,7 @@ namespace Web.Controllers
         }
 
         [HttpPost("{accountNumber}/withdraw")]
-        public ActionResult<TransactionResponse> Withdraw(string accountNumber, [FromBody] TransactionRequest request)
+        public ActionResult<TransactionResponse> Withdraw([FromRoute] string accountNumber, [FromBody] TransactionRequest request)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)
@@ -83,7 +83,7 @@ namespace Web.Controllers
 
 
         [HttpGet("{accountNumber}/balance")]
-        public ActionResult<BalanceResponse> GetBalance(string accountNumber)
+        public ActionResult<BalanceResponse> GetBalance([FromRoute] string accountNumber)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)
@@ -99,7 +99,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("{accountNumber}/history")]
-        public ActionResult<string> GetHistory(string accountNumber)
+        public ActionResult<string> GetHistory([FromRoute] string accountNumber)
         {
             var account = Accounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)

@@ -5,7 +5,7 @@ namespace Core.Entities
         private readonly decimal _monthlyDeposit = 0m;
 
         public GiftCardAccount(string name, decimal initialBalance, decimal monthlyDeposit = 0) 
-            : base(name, initialBalance)
+            : base(name, initialBalance, 0, AccountType.Gift)
         {
             _monthlyDeposit = monthlyDeposit;
         }

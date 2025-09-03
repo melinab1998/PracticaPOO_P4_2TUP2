@@ -176,15 +176,12 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            if (!accounts.Any())
-                return NotFound("Cuenta no encontrada.");
-
             var allInfo = accounts.Select(account => new
             {
                 account.Number,
                 account.Owner,
                 Balance = account.Balance
-            });
+            }).ToList();
 
             return Ok(allInfo);
         }

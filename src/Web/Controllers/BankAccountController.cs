@@ -8,7 +8,7 @@ namespace Web.Controllers;
 [Route("[controller]")]
 public class BankAccountController : ControllerBase
 {
-    private static List<BankAccount> accounts = new List<BankAccount>();
+    
     private readonly ApplicationDbContext _context;
 
     public BankAccountController(ApplicationDbContext applicationDbContext)
@@ -63,11 +63,12 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)
                 return NotFound("Account not found.");
 
             account.PerformMonthEndTransactions();
+            _context.SaveChanges();
             return Ok($"Month-end processing completed for account {account.Number}.");
         }
         catch (Exception ex)
@@ -82,12 +83,13 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
 
             if (account == null)
                 return NotFound("Cuenta no encontrada.");
 
             account.MakeDeposit(amount, DateTime.Now, note);
+            _context.SaveChanges();
 
             return Ok($"A deposit of ${amount} was made in account {account.Number}.");
         }
@@ -102,12 +104,13 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
 
             if (account == null)
                 return NotFound("Cuenta no encontrada.");
 
             account.MakeWithdrawal(amount, DateTime.Now, note);
+            _context.SaveChanges();
 
             return Ok($"A withdrawal of ${amount} was made in account {account.Number}.");
         }
@@ -122,7 +125,7 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
 
             if (account == null)
                 return NotFound("Cuenta no encontrada.");
@@ -140,7 +143,7 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
 
             if (account == null)
                 return NotFound("Cuenta no encontrada.");
@@ -160,7 +163,7 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)
                 return NotFound("Cuenta no encontrada.");
 
@@ -185,10 +188,7 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            if (!accounts.Any())
-                return Ok(Enumerable.Empty<BankAccount>());
-
-            var allInfo = accounts.Select(account => new
+            var allInfo = _context.bankAccounts.Select(account => new 
             {
                 account.Number,
                 account.Owner,

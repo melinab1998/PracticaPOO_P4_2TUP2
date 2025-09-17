@@ -63,11 +63,12 @@ public class BankAccountController : ControllerBase
     {
         try
         {
-            var account = accounts.FirstOrDefault(a => a.Number == accountNumber);
+            var account = _context.bankAccounts.FirstOrDefault(a => a.Number == accountNumber);
             if (account == null)
                 return NotFound("Account not found.");
 
             account.PerformMonthEndTransactions();
+            _context.SaveChanges();
             return Ok($"Month-end processing completed for account {account.Number}.");
         }
         catch (Exception ex)

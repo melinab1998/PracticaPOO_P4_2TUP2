@@ -70,7 +70,7 @@ public class BankAccount
         if (amount > _withDrawalLimit)
         {
             throw new AppValidationException(
-            $"El monto {amount} excede el límite de extracción.", "400");
+            $"El monto {amount} excede el límite de extracción.");
         }
 
         if (amount <= 0)

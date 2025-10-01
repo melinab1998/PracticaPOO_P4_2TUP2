@@ -62,12 +62,16 @@ public class BankAccount
     public void MakeWithdrawal(decimal amount, DateTime date, string note)
     {
 
+        if (Balance - amount < 0)
+        {
+            throw new AppValidationException("No hay saldo suficiente en la cuenta.");
+        }
+
         if (amount > _withDrawalLimit)
         {
             throw new AppValidationException(
             $"El monto {amount} excede el límite de extracción.", "400");
         }
-
 
         if (amount <= 0)
         {

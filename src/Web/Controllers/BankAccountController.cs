@@ -6,6 +6,7 @@ using Core.Interfaces;
 using System.Linq.Expressions;
 using Web.Models;
 using Core.Exceptions;
+using Web.Models.Requests;
 
 namespace Web.Controllers;
 
@@ -21,25 +22,25 @@ public class BankAccountController : ControllerBase
     }
 
     [HttpPost("create")]
-    public ActionResult<BankAccount> CreateBankAccount([FromQuery] string name, [FromQuery] decimal initialBalance, [FromQuery] AccountType accountType, [FromQuery] decimal? creditLimit = null, [FromQuery] decimal? monthlyDeposit = null)
+    public ActionResult<BankAccount> CreateBankAccount([FromBody] CreateBankAccountRequest request)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(request.Name))
             throw new AppValidationException("Owner name is required.");
 
         BankAccount newAccount;
         
-        switch (accountType)
+        switch (request.AccountType)
         {
             case AccountType.Credit:
-                if (creditLimit == null)
+                if (request.CreditLimit == null)
                     return BadRequest("Credit limit is required for a Line of Credit account.");
-                newAccount = new LineOfCreditAccount(name, initialBalance, creditLimit.Value);
+                newAccount = new LineOfCreditAccount(request.Name, request.InitialBalance, request.CreditLimit.Value);
                 break;
             case AccountType.Gift:
-                newAccount = new GiftCardAccount(name, initialBalance, monthlyDeposit ?? 0);
+                newAccount = new GiftCardAccount(request.Name, request.InitialBalance, request.MonthlyDeposit ?? 0);
                 break;
             case AccountType.Interest:
-                newAccount = new InterestEarningAccount(name, initialBalance);
+                newAccount = new InterestEarningAccount(request.Name, request.InitialBalance);
                 break;
             default:
                 return BadRequest("Invalid account type.");

@@ -15,8 +15,8 @@ public interface IUserRepository
 
     void Update(User entity);
 
-    void Delete(User entity);
+    void Delete(int id);
 
     int SaveChanges();
-
+    
 }

@@ -18,6 +18,10 @@ public class UserServices
     public List<UserDto> GetAllUsersInfo()
     {
         var list = _userRepository.List();
+        if (list == null || !list.Any())
+        {
+            throw new Exception("No users found");
+        }
         return UserDto.Create(list);
 
 
@@ -26,6 +30,10 @@ public class UserServices
     public UserDto GetUserInfo(int id)
     {
         var user = _userRepository.GetById(id);
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
         return UserDto.Create(user);
     }
 
@@ -39,6 +47,7 @@ public UserDto CreateUser( string UserName, string FirstName, string LastName, s
         Email = Email,
         Phone = Phone
     });
+    _userRepository.SaveChanges();
     return UserDto.Create(user);
 }
  
@@ -64,6 +73,7 @@ public UserDto CreateUser( string UserName, string FirstName, string LastName, s
         user.Phone = Phone;
 
         _userRepository.Update(user);
+        _userRepository.SaveChanges();
         return UserDto.Create(user);
     }
 
@@ -71,5 +81,6 @@ public UserDto CreateUser( string UserName, string FirstName, string LastName, s
     public void DeleteUser(int id)
     {
         _userRepository.Delete(id);
+         _userRepository.SaveChanges();
     }
 }

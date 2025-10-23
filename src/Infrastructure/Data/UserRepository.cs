@@ -2,7 +2,7 @@ using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Data;
 
-namespace ConsultaAlumnos.Infrastructure.Data;
+namespace Core.Infrastructure.Data;
 
 public class UserRepository : IUserRepository
 {

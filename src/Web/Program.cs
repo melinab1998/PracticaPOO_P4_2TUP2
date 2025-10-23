@@ -1,4 +1,4 @@
-using ConsultaAlumnos.Infrastructure.Data;
+using Core.Infrastructure.Data;
 using Core.Interfaces;
 using Core.Services;
 using Infrastructure.Data;

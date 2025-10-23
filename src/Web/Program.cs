@@ -1,3 +1,4 @@
+using ConsultaAlumnos.Infrastructure.Data;
 using Core.Interfaces;
 using Core.Services;
 using Infrastructure.Data;
@@ -19,6 +20,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddScoped<BankAccountService>();
+builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 /* Configuración de conexión con SQLite */
 var connection = new SqliteConnection("Data Source=WebApiBankAccount.db");

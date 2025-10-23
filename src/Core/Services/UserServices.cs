@@ -1,6 +1,7 @@
 
 using Core.Dtos;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 
 
@@ -57,13 +58,13 @@ public UserDto CreateUser( string UserName, string FirstName, string LastName, s
     {
         if (id != idDto)
         {
-            throw new Exception("User ID mismatch");
+            throw new AppValidationException("User ID mismatch");
         }
         
         var user = _userRepository.GetById(id);
         if (user == null)
         {
-            throw new Exception("User not found");
+            throw new NotFoundException("User not found");
         }
 
         user.UserName = UserName;
